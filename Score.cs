@@ -27,6 +27,17 @@ namespace IntergalacticMission
                 this.player = value;
             }
         }
+        public string Mission
+        {
+            get 
+            {
+                return this.mission;
+            }
+            set
+            {
+
+            }
+        }
         
     }
 }
