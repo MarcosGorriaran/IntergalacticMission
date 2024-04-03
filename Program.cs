@@ -4,14 +4,17 @@ public class Driver
 {
     public static void Main()
     {
+
         const string AskPlayerName = "Please provide me with the name of the player {0}: ";
         const string AskMissionCode = "Please provide me with the code of his mission: ";
         const string AskScore = "Please provide me with the score of the mission [0-500]: ";
+        const string ShowScore = "Player {0} scores: ";
+        const string ShowScoreStats = "   Mission: {0}\n      Score: {1}";
         const string FormatError = "The score must be a number";
-        const int amountPlayers = 10;
+        const int amountPlayers = 2;
 
         Score[] scores = new Score[amountPlayers];
-
+        List<List<Score>> scoreList = new List<List<Score>>();
         for(int i = 0; i < amountPlayers; i++)
         {
             bool error;
@@ -51,7 +54,7 @@ public class Driver
                 try
                 {
                     Console.Write(AskScore);
-                    scores[i].Scoring = int.Parse(Console.ReadLine() ?? "");
+                    scores[i].Scoring = Convert.ToInt32(Console.ReadLine());
                 }
                 catch (FormatException)
                 {
@@ -64,6 +67,16 @@ public class Driver
                     error = true;
                 }
             } while (error);
+        }
+        scoreList = Score.GenerateUniqueRanking(new List<Score>(scores));
+
+        foreach(List<Score> scoreSmallList in scoreList)
+        {
+            Console.WriteLine(ShowScore,scoreSmallList.First().Player);
+            foreach(Score score in scoreSmallList)
+            {
+                Console.WriteLine(ShowScoreStats,score.Mission, score.Scoring);
+            }
         }
     }
 }

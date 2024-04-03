@@ -1,8 +1,9 @@
 ﻿using System.Text.RegularExpressions;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace IntergalacticMission
 {
-    public class Score
+    public class Score : IComparable<Score>
     {
         
         const string ErrorPlayRegexMissmatch = "The player must only have alphanumeric characters on their name";
@@ -59,6 +60,7 @@ namespace IntergalacticMission
                 {
                     throw new Exception(ErrorMissionRegexMissmatch);
                 }
+                this.mission = value;
             }
         }
         public int Scoring
@@ -73,12 +75,39 @@ namespace IntergalacticMission
                 {
                     throw new Exception(ErrorScoringOutOfBounds);
                 }
+                this.scoring = value;
             }
         }
         
-        public static Score[] GenerateUniqueRanking(List<Score> scores)
+        public static List<List<Score>> GenerateUniqueRanking(List<Score> scores)
         {
-            var scores = 
+            List<List<Score>> filteredScoreList = new List<List<Score>>();
+            var filteredScores = (from score in scores
+                                 group score by score.Player into newGroup
+                                 orderby newGroup.Key
+                                 select newGroup);
+            
+            foreach (var scoreVals in filteredScores)
+            {
+                List<Score> scoreList = scoreVals.ToList();
+                List<Score> nonRepeatedScore = new List<Score>();
+                while(scoreList.Count > 0)
+                {
+                    nonRepeatedScore.Add(scoreList.First());
+                    scoreList.RemoveAll(score => score.scoring==scoreList.First().scoring && score.Mission==scoreList.First().Mission);
+                }
+                nonRepeatedScore.Sort();
+                filteredScoreList.Add(nonRepeatedScore);
+            }
+            return filteredScoreList;
+        }
+        public int CompareTo(Score other)
+        {
+            if(other.Scoring < this.Scoring)
+            {
+                return -1;
+            }else if(other.Scoring > this.Scoring) { return 1; }
+            return 0;
         }
     }
 }
